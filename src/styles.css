@@ -1,0 +1,152 @@
+@import "tailwindcss";
+
+@theme {
+  --color-bg: #f3efe7;
+  --color-surface: #fbfaf6;
+  --color-surface-2: #eee8dc;
+  --color-ink: #1a1916;
+  --color-fg: #1a1916;
+  --color-muted: #6b655c;
+  --color-faint: #8a8378;
+  --color-primary: #2c453c;
+  --color-primary-foreground: #f6f1e8;
+  --color-accent: #2c453c;
+  --color-border: color-mix(in oklab, var(--color-ink) 12%, transparent);
+  --color-border-strong: color-mix(in oklab, var(--color-ink) 22%, transparent);
+  --color-ring: #2c453c;
+  --color-good: #3f6b4b;
+  --color-warn: #8a5a2b;
+  --color-danger: #8b3a2a;
+  --color-card: #fbfaf6;
+  --color-secondary: #ece6d8;
+  --color-secondary-foreground: #1a1916;
+
+  --font-sans: "Figtree", "Segoe UI", system-ui, sans-serif;
+  --font-display: "Fraunces", "Times New Roman", serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-2xl: 32px;
+  --radius: 12px;
+
+  --shadow-border:
+    0px 0px 0px 1px rgba(26, 25, 22, 0.06),
+    0px 1px 2px -1px rgba(26, 25, 22, 0.06),
+    0px 2px 4px 0px rgba(26, 25, 22, 0.04);
+  --shadow-border-hover:
+    0px 0px 0px 1px rgba(26, 25, 22, 0.1),
+    0px 1px 2px -1px rgba(26, 25, 22, 0.08),
+    0px 8px 16px -8px rgba(26, 25, 22, 0.12);
+
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-smooth-out: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  html,
+  body,
+  #app {
+    min-height: 100dvh;
+    background: var(--color-bg);
+    color: var(--color-fg);
+  }
+
+  body {
+    font-family: var(--font-sans);
+    line-height: 1.5;
+    background-image:
+      radial-gradient(1200px 500px at 10% -10%, color-mix(in oklab, var(--color-primary) 6%, transparent), transparent 55%),
+      radial-gradient(900px 420px at 110% 0%, color-mix(in oklab, var(--color-ink) 5%, transparent), transparent 50%);
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    text-wrap: balance;
+    letter-spacing: -0.03em;
+    line-height: 1.15;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+
+  ::selection {
+    background: color-mix(in oklab, var(--color-primary) 22%, transparent);
+    color: var(--color-ink);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stagger-in,
+  .stagger-in > * {
+    animation: none !important;
+    opacity: 1 !important;
+    filter: none !important;
+    transform: none !important;
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+    filter: blur(3px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+.stagger-in > * {
+  opacity: 0;
+  animation: fade-up 500ms var(--ease-smooth-out) forwards;
+}
+
+.stagger-in > *:nth-child(1) { animation-delay: 0ms; }
+.stagger-in > *:nth-child(2) { animation-delay: 60ms; }
+.stagger-in > *:nth-child(3) { animation-delay: 120ms; }
+.stagger-in > *:nth-child(4) { animation-delay: 180ms; }
+.stagger-in > *:nth-child(5) { animation-delay: 240ms; }
+.stagger-in > *:nth-child(6) { animation-delay: 300ms; }
+.stagger-in > *:nth-child(7) { animation-delay: 360ms; }
+.stagger-in > *:nth-child(8) { animation-delay: 420ms; }
+
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    color-mix(in oklab, var(--color-ink) 6%, transparent) 0%,
+    color-mix(in oklab, var(--color-ink) 12%, transparent) 50%,
+    color-mix(in oklab, var(--color-ink) 6%, transparent) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.4s linear infinite;
+}
+
+@keyframes shimmer {
+  from { background-position: 100% 0; }
+  to { background-position: -100% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shimmer {
+    animation: none;
+  }
+}
