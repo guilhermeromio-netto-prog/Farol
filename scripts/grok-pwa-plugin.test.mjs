@@ -147,8 +147,6 @@ test("baked identity does not need a workspace filesystem", () => {
 });
 
 test("a public card file wins over a baked site without card=custom", () => {
-  // Deploy middleware always passes a baked `site`. If that snapshot missed
-  // the file, public/og.jpg must still beat the og.grok.me placeholder.
   const root = mkdtempSync(join(tmpdir(), "grok-og-card-"));
   mkdirSync(join(root, "public"));
   writeFileSync(join(root, "public/og.jpg"), "x");
@@ -178,10 +176,8 @@ test("resolveOgCardAsset: disk file, then bake, then empty (placeholder)", () =>
   const empty = mkdtempSync(join(tmpdir(), "grok-og-none-"));
   assert.equal(resolveOgCardAsset({}, empty), "");
   assert.equal(resolveOgCardAsset({ title: "X" }, empty), "");
-
   const baked = resolveOgCardAsset({ card: "custom", image: "/og.jpg" }, empty);
   assert.equal(baked, "/og.jpg");
-
   const root = mkdtempSync(join(tmpdir(), "grok-og-disk-"));
   mkdirSync(join(root, "public"));
   writeFileSync(join(root, "public/og.jpg"), "x");
@@ -213,10 +209,7 @@ test("emits x:game:image for a public host when site.banner is set", () => {
     host: "wild-race.grok.me",
     site: { title: "Wild Race", type: "x:game", card: "custom", banner: "/x-banner.jpg" },
   });
-  assert.match(
-    out,
-    /property="x:game:image" content="https:\/\/wild-race\.grok\.me\/x-banner\.jpg"/,
-  );
+  assert.match(out, /property="x:game:image" content="https:\/\/wild-race\.grok\.me\/x-banner\.jpg"/);
   assert.match(out, /property="x:game:image:width" content="1200"/);
   assert.match(out, /property="x:game:image:height" content="264"/);
   assert.doesNotMatch(out, /content="old"/);
@@ -224,9 +217,7 @@ test("emits x:game:image for a public host when site.banner is set", () => {
 });
 
 test("does not emit x:game:image without a public host or banner", () => {
-  const noHost = injectGrokPwaHead("<html><head></head></html>", {
-    site: { banner: "/x-banner.jpg" },
-  });
+  const noHost = injectGrokPwaHead("<html><head></head></html>", { site: { banner: "/x-banner.jpg" } });
   assert.doesNotMatch(noHost, /x:game:image/);
   const noBanner = injectGrokPwaHead("<html><head></head></html>", {
     host: "wild-race.grok.me",
@@ -244,9 +235,7 @@ test("site title Grok App is a real name, not a sentinel", () => {
 });
 
 test("published grok.me slug is still a title fallback", () => {
-  const out = injectGrokPwaHead("<html><head></head></html>", {
-    host: "wild-race.grok.me",
-  });
+  const out = injectGrokPwaHead("<html><head></head></html>", { host: "wild-race.grok.me" });
   assert.match(out, /property="og:title" content="Wild Race"/);
 });
 
@@ -265,20 +254,13 @@ test("published VITE_PUBLIC_HOSTNAME wins over request Host for og:image", () =>
       host: "01a020b6-803a-71a2-bb47-e2bec57eb9a2-662k8x1l1-xai-org.vercel.app",
       site: { title: "RACK", card: "custom" },
     });
-    assert.match(
-      vercelHost,
-      /property="og:image" content="https:\/\/plum-plaza-reef-dream\.grok\.me\/og\.jpg"/,
-    );
+    assert.match(vercelHost, /property="og:image" content="https:\/\/plum-plaza-reef-dream\.grok\.me\/og\.jpg"/);
     assert.doesNotMatch(vercelHost, /vercel\.app/);
-
     const otherPublicHost = injectGrokPwaHead("<html><head><title>RACK</title></head></html>", {
       host: "custom.example.com",
       site: { title: "RACK", card: "custom" },
     });
-    assert.match(
-      otherPublicHost,
-      /property="og:image" content="https:\/\/plum-plaza-reef-dream\.grok\.me\/og\.jpg"/,
-    );
+    assert.match(otherPublicHost, /property="og:image" content="https:\/\/plum-plaza-reef-dream\.grok\.me\/og\.jpg"/);
     assert.doesNotMatch(otherPublicHost, /custom\.example\.com/);
   } finally {
     if (prev === undefined) delete process.env.VITE_PUBLIC_HOSTNAME;
@@ -308,12 +290,8 @@ test("emits og:image for a public host and prefers a custom card", () => {
     host: "wild-race.grok.me",
     site: { title: "Wild Race" },
   });
-  assert.match(
-    placeholder,
-    /property="og:image" content="https:\/\/og\.grok\.me\/v1\/card\.png\?host=wild-race\.grok\.me&amp;title=Wild%20Race"/,
-  );
+  assert.match(placeholder, /property="og:image" content="https:\/\/og\.grok\.me\/v1\/card\.png\?host=wild-race\.grok\.me&amp;title=Wild%20Race"/);
   assert.match(placeholder, /property="og:image:width" content="1200"/);
-
   const custom = injectGrokPwaHead("<html><head></head></html>", {
     appName: "Wild Race",
     host: "wild-race.grok.me",
@@ -328,17 +306,12 @@ test("placeholder og:image appends site.color when it is 6-digit hex", () => {
     host: "wild-race.grok.me",
     site: { title: "Wild Race", color: "#FF4D2E" },
   });
-  assert.match(
-    themed,
-    /property="og:image" content="https:\/\/og\.grok\.me\/v1\/card\.png\?host=wild-race\.grok\.me&amp;title=Wild%20Race&amp;color=FF4D2E"/,
-  );
-
+  assert.match(themed, /property="og:image" content="https:\/\/og\.grok\.me\/v1\/card\.png\?host=wild-race\.grok\.me&amp;title=Wild%20Race&amp;color=FF4D2E"/);
   const invalid = injectGrokPwaHead("<html><head></head></html>", {
     host: "wild-race.grok.me",
     site: { title: "Wild Race", color: "red" },
   });
   assert.doesNotMatch(invalid, /color=/);
-
   const custom = injectGrokPwaHead("<html><head></head></html>", {
     host: "wild-race.grok.me",
     site: { title: "Wild Race", card: "custom", color: "FF4D2E" },
@@ -347,9 +320,7 @@ test("placeholder og:image appends site.color when it is 6-digit hex", () => {
 });
 
 test("document title entities are not double-escaped on og:title", () => {
-  const out = injectGrokPwaHead(
-    "<html><head><title>Cats &amp; Dogs</title></head></html>",
-  );
+  const out = injectGrokPwaHead("<html><head><title>Cats &amp; Dogs</title></head></html>");
   assert.match(out, /property="og:title" content="Cats &amp; Dogs"/);
   assert.doesNotMatch(out, /Cats &amp;amp; Dogs/);
 });
@@ -485,7 +456,7 @@ test("renders the manifest with the per-app name", () => {
 // fail silently (published apps would just render the app for ?install=1).
 test("vite config keeps the nitro serverDir wiring", () => {
   const viteConfig = readFileSync(join(TEMPLATE_ROOT, "vite.config.ts"), "utf8");
-  assert.match(viteConfig, /serverDir:\s*\"\.\/server\"/);
+  assert.match(viteConfig, /serverDir:\s*"\.\/server"/);
   assert.match(viteConfig, /grokPwaPlugin\(\)/);
 });
 
